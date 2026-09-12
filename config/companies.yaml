@@ -1,0 +1,78 @@
+# Enable a source only after verifying its official career/ATS relationship,
+# collection permissions, adapter settings and application URL prefixes.
+#
+# Supported adapters:
+#   greenhouse: requires board
+#   lever: requires site
+#   html: reads JobPosting JSON-LD from explicit pages
+#
+# Additional settings for an enabled source:
+#   verified: true
+#   enabled: true
+#   adapter: greenhouse | lever | html
+#   application_prefixes: [verified official application URL prefix]
+#
+# HTML sources additionally require:
+#   pages: [official pages containing JobPosting JSON-LD]
+#   fetch_hosts: [exact permitted hostnames]
+
+companies:
+  - name: NVIDIA
+    countries: [India]
+    careers_url: https://www.nvidia.com/en-us/about-nvidia/careers/
+    enabled: false
+
+  - name: Qualcomm
+    countries: [India]
+    careers_url: https://www.qualcomm.com/company/careers
+    enabled: false
+
+  - name: AMD
+    countries: [India]
+    careers_url: https://careers.amd.com/
+    enabled: false
+
+  - name: Intel
+    countries: [India]
+    careers_url: https://jobs.intel.com/
+    enabled: false
+
+  - name: Texas Instruments
+    countries: [India]
+    careers_url: https://careers.ti.com/
+    enabled: false
+
+  - name: Micron
+    countries: [India, Japan]
+    careers_url: https://www.micron.com/about/careers
+    enabled: false
+
+  - name: NXP
+    countries: [India]
+    careers_url: https://www.nxp.com/company/about-nxp/careers:CAREERS
+    enabled: false
+
+  - name: Renesas
+    countries: [India, Japan]
+    careers_url: https://www.renesas.com/en/about/careers
+    enabled: false
+
+  - name: Sony
+    countries: [Japan]
+    careers_url: https://www.sony.com/en/SonyInfo/Careers/
+    enabled: false
+
+  - name: Panasonic
+    countries: [Japan]
+    careers_url: https://holdings.panasonic/global/corporate/careers.html
+    enabled: false
+
+  - name: Bosch
+    countries: [India]
+    careers_url: https://www.bosch.com/careers/
+    enabled: false
+
+  - name: Siemens
+    countries: [India, Japan]
+    careers_url: https://www.siemens.com/global/en/company/jobs.html
+    enabled: false
