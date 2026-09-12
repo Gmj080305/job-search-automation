@@ -1,0 +1,20 @@
+weights:
+  skills: 0.30
+  domain: 0.20
+  education: 0.15
+  experience: 0.10
+  projects: 0.10
+  location: 0.05
+  onsite: 0.05
+  fresher: 0.05
+
+partial_skill_credit: 0.4
+allow_hybrid: false
+
+priority:
+  high_minimum: 80
+  medium_minimum: 55
+  recent_days: 7
+  closing_days: 7
+  freshness_bonus: 5
+  deadline_bonus: 5
