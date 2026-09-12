@@ -1,0 +1,77 @@
+skills:
+  Verilog: [verilog]
+  SystemVerilog: [systemverilog, system verilog]
+  RTL: [rtl, register transfer level]
+  FPGA: [fpga, field programmable gate array]
+  ASIC: [asic, application specific integrated circuit]
+  AXI: [axi, amba axi]
+  Vivado: [vivado]
+  Digital Design: [digital design, digital logic]
+  Analog: [analog, analogue]
+  Mixed Signal: [mixed signal, mixed-signal]
+  Embedded: [embedded]
+  Hardware: [hardware]
+  Semiconductor: [semiconductor]
+  SoC: [soc, system on chip, system-on-chip]
+  Verification: [verification, functional verification]
+  Validation: [hardware validation, silicon validation]
+  Physical Design: [physical design]
+  STA: [sta, static timing analysis]
+  EDA: [eda, electronic design automation]
+  RF: [rf, radio frequency]
+  RFIC: [rfic]
+  IC Design: [ic design, integrated circuit design]
+  DSP: [dsp, digital signal processing]
+  OFDM: [ofdm]
+  Wireless: [wireless]
+  Signal Processing: [signal processing]
+  Communication Systems: [communication systems, communications systems]
+  UVM: [uvm, universal verification methodology]
+  Assertions: [assertions, systemverilog assertions]
+  Testbench: [testbench, test bench]
+  CDC: [cdc, clock domain crossing]
+  PCIe: [pcie, pci express]
+  Linux: [linux]
+  Python: [python]
+  C: [c]
+  C++: [c++]
+  VLSI: [vlsi, very large scale integration]
+
+categories:
+  DIGITAL_DESIGN:
+    [Verilog, SystemVerilog, RTL, FPGA, ASIC, AXI, Vivado, Digital Design, SoC, VLSI]
+  COMMUNICATION_SYSTEMS:
+    [DSP, OFDM, Wireless, Signal Processing, Communication Systems, RF, RFIC]
+  VERIFICATION:
+    [Verification, UVM, Assertions, Testbench, CDC, Validation]
+  ANALOG:
+    [Analog, Mixed Signal, IC Design]
+  IMPLEMENTATION:
+    [Physical Design, STA, EDA]
+  EMBEDDED:
+    [Embedded, Hardware, C, C++, Linux]
+
+# Title evidence, not generic mentions in employer descriptions.
+role_terms:
+  - hardware
+  - rtl
+  - asic
+  - fpga
+  - verification
+  - silicon
+  - semiconductor
+  - embedded
+  - vlsi
+  - digital design
+  - analog
+  - mixed signal
+  - physical design
+  - timing
+  - rf
+  - wireless
+  - dsp
+  - signal processing
+  - communication
+  - electronics
+  - electrical
+  - circuit
