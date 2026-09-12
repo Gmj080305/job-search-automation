@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description"
+        content="Personalized electronics job discovery for India and Japan.">
+  <title>ECE Job Finder</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#results">Skip to jobs</a>
+
+  <header class="hero">
+    <div class="container">
+      <p class="eyebrow">INDIA · JAPAN · ELECTRONICS</p>
+      <h1>Find your next <span>engineering opportunity.</span></h1>
+      <p class="intro">
+        Explore electronics roles, understand your matches,
+        and prepare your next application.
+      </p>
+
+      <div class="summary" aria-label="Job summary">
+        <div>
+          <strong id="total-count">—</strong>
+          <span>Collected jobs</span>
+        </div>
+        <div>
+          <strong id="visible-count">—</strong>
+          <span>Matching filters</span>
+        </div>
+        <div>
+          <strong id="high-count">—</strong>
+          <span>High priority matches</span>
+        </div>
+      </div>
+      <p id="updated-at" class="muted"></p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="panel filters" aria-labelledby="filters-heading">
+      <div class="section-heading">
+        <h2 id="filters-heading">Find your fit</h2>
+        <button id="reset-filters" class="button secondary" type="button">
+          Reset filters
+        </button>
+      </div>
+
+      <form id="filters-form">
+        <label class="search-field">
+          Search
+          <input id="search" type="search"
+                 placeholder="Role, company, skill, or location"
+                 autocomplete="off">
+        </label>
+
+        <div class="filter-grid">
+          <label>
+            Country
+            <select id="country"><option value="">All countries</option></select>
+          </label>
+          <label>
+            City
+            <select id="city"><option value="">All cities</option></select>
+          </label>
+          <label>
+            Company
+            <select id="company"><option value="">All companies</option></select>
+          </label>
+          <label>
+            Work mode
+            <select id="work-mode"><option value="">All work modes</option></select>
+          </label>
+          <label>
+            Employment
+            <select id="employment"><option value="">All types</option></select>
+          </label>
+          <label>
+            Sort by
+            <select id="sort">
+              <option value="match">Best match</option>
+              <option value="priority">Application priority</option>
+              <option value="newest">Newest posting</option>
+              <option value="deadline">Closing soon</option>
+              <option value="company">Company name</option>
+            </select>
+          </label>
+          <label>
+            Deadline on or before
+            <input id="deadline" type="date">
+          </label>
+          <label>
+            Minimum match: <output id="minimum-output" for="minimum">0%</output>
+            <input id="minimum" type="range" min="0" max="100" step="5" value="0">
+          </label>
+        </div>
+
+        <label class="checkbox-label">
+          <input id="hide-expired" type="checkbox" checked>
+          Hide expired or unavailable jobs
+        </label>
+      </form>
+    </section>
+
+    <section id="results" aria-labelledby="results-heading" tabindex="-1">
+      <div class="section-heading results-heading">
+        <h2 id="results-heading">Your opportunities</h2>
+        <button id="reload" class="button secondary" type="button">
+          Refresh data
+        </button>
+      </div>
+
+      <p id="status" role="status" aria-live="polite">Loading jobs…</p>
+      <p id="source-warning" class="notice" hidden></p>
+      <div id="jobs" class="jobs-grid" aria-busy="true"></div>
+
+      <div id="empty-state" class="panel empty-state" hidden>
+        <h3>No jobs to show</h3>
+        <p id="empty-message">
+          Try reducing the minimum match or clearing some filters.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    <p>
+      Match scores are recommendations, not eligibility guarantees.
+      Confirm requirements, deadlines, and availability on the employer’s site.
+    </p>
+    <p>Applications are completed on employer career sites—not by this dashboard.</p>
+  </footer>
+
+  <noscript>
+    <p class="container notice">Enable JavaScript to load and filter jobs.</p>
+  </noscript>
+</body>
+</html>
