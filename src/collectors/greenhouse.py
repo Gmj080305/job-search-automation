@@ -24,7 +24,6 @@ class GreenhouseSource(JobSource):
         # Let HTTP/network errors propagate so the pipeline can report
         # a source failure instead of treating it as an empty job board.
         payload = client.json(url)
-
         if not isinstance(payload, dict):
             raise ValueError(
                 "Unexpected Greenhouse response: expected a JSON object."
@@ -36,25 +35,21 @@ class GreenhouseSource(JobSource):
             raise ValueError(
                 "Unexpected Greenhouse response: 'jobs' must be a list."
             )
-
         if any(not isinstance(job, dict) for job in jobs):
             raise ValueError(
                 "Unexpected Greenhouse response: each job must be an object."
             )
 
-                postings = []
+        postings = []
 
         for job in jobs:
             location = job.get("location")
-
             if location is None:
                 location_name = ""
             elif isinstance(location, dict):
                 location_name = location.get("name") or ""
                 if not isinstance(location_name, str):
-                    raise ValueError(
-                        "Unexpected Greenhouse location name."
-                    )
+                    raise ValueError("Unexpected Greenhouse location name.")
             else:
                 raise ValueError(
                     "Unexpected Greenhouse location: expected an object."
@@ -74,4 +69,3 @@ class GreenhouseSource(JobSource):
             })
 
         return postings
-
