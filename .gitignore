@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.env
+.DS_Store
+
+# Private candidate inputs
+private/
+*.pdf
+candidate_profile.json
+
+# Generated output
+build/
+public/
+data/jobs.json
+data/history/
