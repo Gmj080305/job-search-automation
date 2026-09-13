@@ -1,78 +1,183 @@
-# Enable a source only after verifying its official career/ATS relationship,
-# collection permissions, adapter settings and application URL prefixes.
+# Company career sources for the job-search automation project.
 #
-# Supported adapters:
-#   greenhouse: requires board
-#   lever: requires site
-#   html: reads JobPosting JSON-LD from explicit pages
+# IMPORTANT:
+# - enabled=true means the matching collector is implemented and the source
+#   configuration has been checked against a real company Apply URL.
+# - verified=true means the ATS relationship and application prefix below were
+#   derived from a real URL, not guessed.
+# - careers_url is the official employer career page and may be on a different
+#   host from the ATS/application system.
+# - Do not add tracking/query parameters to careers_url or application_prefixes.
 #
-# Additional settings for an enabled source:
-#   verified: true
-#   enabled: true
-#   adapter: greenhouse | lever | html
-#   application_prefixes: [verified official application URL prefix]
+# Collector support:
+#   greenhouse       -> Greenhouse public board API
+#   lever            -> Lever public postings API
+#   html             -> explicit JobPosting JSON-LD pages
+#   workday          -> Workday public CXS jobs endpoint
+#   icims            -> public iCIMS hosted career portal
+#   smartrecruiters  -> SmartRecruiters public Posting API
+#   oracle_hcm       -> public Oracle Candidate Experience pages / JSON-LD
+#   hrmos            -> public HRMOS career pages / JSON-LD
+#   eightfold        -> public Eightfold career pages / JSON-LD
 #
-# HTML sources additionally require:
-#   pages: [official pages containing JobPosting JSON-LD]
-#   fetch_hosts: [exact permitted hostnames]
+# Current URL evidence supplied for this project:
+#   NVIDIA       -> nvidia.wd5.myworkdayjobs.com / Workday
+#   Qualcomm     -> careers.qualcomm.com / Eightfold-powered site
+#   AMD          -> careers-amd.icims.com / iCIMS
+#   Micron       -> careers.micron.com / Eightfold-powered site
+#   NXP          -> nxp.wd3.myworkdayjobs.com / Workday
+#   Intel        -> intel.wd1.myworkdayjobs.com / Workday
+#   Renesas      -> jobs.smartrecruiters.com / SmartRecruiters
+#   Texas Inst.  -> careers.ti.com Candidate Experience / Oracle HCM
+#   Panasonic    -> hrmos.co / HRMOS
+#   Sony         -> sonyglobal.wd1.myworkdayjobs.com / Workday
+#
+# Bosch and Siemens remain disabled until their current Apply/ATS URLs are
+# supplied and verified.
 
 companies:
   - name: NVIDIA
     countries: [India]
-    careers_url: https://www.nvidia.com/en-us/about-nvidia/careers/
-    enabled: false
+    careers_url: https://jobs.nvidia.com/careers
+    enabled: true
+    verified: true
+    adapter: workday
+    tenant: nvidia
+    datacenter: wd5
+    site: NVIDIAExternalCareerSite
+    locale: en-US
+    max_jobs: 500
+    application_prefixes:
+      - https://nvidia.wd5.myworkdayjobs.com/en-US/NVIDIAExternalCareerSite/
 
   - name: Qualcomm
     countries: [India]
-    careers_url: https://www.qualcomm.com/company/careers
+    careers_url: https://careers.qualcomm.com/careers
     enabled: false
+    verified: true
+    adapter: eightfold
+    pages:
+      - https://careers.qualcomm.com/careers
+    fetch_hosts:
+      - careers.qualcomm.com
+    application_prefixes:
+      - https://careers.qualcomm.com/careers/apply
 
   - name: AMD
     countries: [India]
     careers_url: https://careers.amd.com/
-    enabled: false
+    enabled: true
+    verified: true
+    adapter: icims
+    search_url: https://careers-amd.icims.com/jobs/search?ss=1
+    max_jobs: 200
+    max_pages: 10
+    application_prefixes:
+      - https://careers-amd.icims.com/jobs/
 
   - name: Intel
     countries: [India]
     careers_url: https://jobs.intel.com/
-    enabled: false
+    enabled: true
+    verified: true
+    adapter: workday
+    tenant: intel
+    datacenter: wd1
+    site: External
+    locale: en-US
+    max_jobs: 500
+    application_prefixes:
+      - https://intel.wd1.myworkdayjobs.com/en-US/External/
 
   - name: Texas Instruments
     countries: [India]
     careers_url: https://careers.ti.com/
     enabled: false
+    verified: true
+    adapter: oracle_hcm
+    pages:
+      - https://careers.ti.com/en/sites/CX/jobs
+    fetch_hosts:
+      - careers.ti.com
+    max_jobs: 200
+    application_prefixes:
+      - https://careers.ti.com/en/sites/CX/
 
   - name: Micron
     countries: [India, Japan]
     careers_url: https://www.micron.com/about/careers
     enabled: false
+    verified: true
+    adapter: eightfold
+    pages:
+      - https://careers.micron.com/careers
+    fetch_hosts:
+      - careers.micron.com
+    max_jobs: 200
+    application_prefixes:
+      - https://careers.micron.com/careers/apply
 
   - name: NXP
     countries: [India]
     careers_url: https://www.nxp.com/company/about-nxp/careers:CAREERS
-    enabled: false
+    enabled: true
+    verified: true
+    adapter: workday
+    tenant: nxp
+    datacenter: wd3
+    site: careers
+    locale: en-US
+    max_jobs: 500
+    application_prefixes:
+      - https://nxp.wd3.myworkdayjobs.com/en-US/careers/
 
   - name: Renesas
     countries: [India, Japan]
     careers_url: https://www.renesas.com/en/about/careers
-    enabled: false
+    enabled: true
+    verified: true
+    adapter: smartrecruiters
+    company_identifier: RenesasElectronics
+    max_jobs: 500
+    application_prefixes:
+      - https://jobs.smartrecruiters.com/oneclick-ui/company/RenesasElectronics/
 
   - name: Sony
     countries: [Japan]
     careers_url: https://www.sony.com/en/SonyInfo/Careers/
-    enabled: false
+    enabled: true
+    verified: true
+    adapter: workday
+    tenant: sonyglobal
+    datacenter: wd1
+    site: SonyJapanCareers
+    locale: en-US
+    max_jobs: 500
+    application_prefixes:
+      - https://sonyglobal.wd1.myworkdayjobs.com/en-US/SonyJapanCareers/
 
   - name: Panasonic
     countries: [Japan]
     careers_url: https://holdings.panasonic/global/corporate/careers.html
     enabled: false
+    verified: true
+    adapter: hrmos
+    pages:
+      - https://hrmos.co/pages/panasonic/jobs/
+    fetch_hosts:
+      - hrmos.co
+    max_jobs: 200
+    application_prefixes:
+      - https://hrmos.co/pages/panasonic/jobs/
 
   - name: Bosch
     countries: [India]
     careers_url: https://www.bosch.com/careers/
     enabled: false
+    verified: false
 
   - name: Siemens
     countries: [India, Japan]
     careers_url: https://www.siemens.com/global/en/company/jobs.html
     enabled: false
+    verified: false
