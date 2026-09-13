@@ -24,7 +24,7 @@ if str(ROOT) not in sys.path:
 
 import yaml
 
-from src.collectors.company_sources import normalize, official_url
+from src.collectors.company_sources import normalize
 from src.matching.eligibility import evaluate
 from src.matching.ranking import rank_job, sort_jobs, validate_settings
 from src.matching.skills import Taxonomy
@@ -36,9 +36,15 @@ ADAPTERS = {
     "greenhouse": ("src.collectors.greenhouse", "GreenhouseSource"),
     "lever": ("src.collectors.lever", "LeverSource"),
     "html": ("src.collectors.html_scraper", "HTMLCareerSource"),
+    "workday": ("src.collectors.workday", "WorkdaySource"),
+    "icims": ("src.collectors.icims", "ICIMSSource"),
+    "smartrecruiters": ("src.collectors.smartrecruiters", "SmartRecruitersSource"),
+    "oracle_hcm": ("src.collectors.oracle_hcm", "OracleHCMSource"),
+    "hrmos": ("src.collectors.hrmos", "HRMOSSource"),
+    "eightfold": ("src.collectors.eightfold", "EightfoldSource"),
 }
 
-PUBLIC_FIELDS = {
+PUBLIC_FIELDS = (
     "id",
     "company",
     "title",
@@ -49,6 +55,7 @@ PUBLIC_FIELDS = {
     "employment",
     "degree",
     "skills",
+    "description",
     "application_url",
     "source_url",
     "posted_date",
@@ -65,7 +72,8 @@ PUBLIC_FIELDS = {
     "score_breakdown",
     "screening",
     "tips",
-}
+    "project_matches",
+)
 
 
 def load_yaml(path: str | Path) -> dict[str, Any]:
@@ -142,14 +150,12 @@ def _validate_source_config(config: dict[str, Any]) -> None:
         raise ValueError(f"Enabled source {name} is missing careers_url.")
     if not isinstance(prefixes, list) or not prefixes:
         raise ValueError(f"Enabled source {name} is missing application_prefixes.")
-    if not all(isinstance(prefix, str) for prefix in prefixes):
-        raise ValueError(f"application_prefixes for {name} must be strings.")
+    if not all(isinstance(prefix, str) and prefix.strip() for prefix in prefixes):
+        raise ValueError(f"application_prefixes for {name} must be non-empty strings.")
 
-    # The configured career URL must itself belong to an approved HTTPS prefix.
-    if not official_url(careers_url, prefixes):
-        raise ValueError(
-            f"careers_url for {name} is outside its verified application prefixes."
-        )
+    # careers_url is the official employer career page and may legitimately
+    # use a different host from the ATS/application system. application_prefixes
+    # are checked separately by normalize() against each actual application URL.
 
 
 def collect(args: argparse.Namespace) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -315,7 +321,8 @@ def main(argv: list[str] | None = None) -> int:
         output = {
             "generated_at": timestamp(),
             "screening_date": date.today().isoformat(),
-            "resume": str(Path(args.resume).resolve()),
+            # Never publish the candidate's local filesystem path.
+            "resume": Path(args.resume).name,
             "collection": collection_stats,
             "processing": processing_stats,
             "jobs": [_public_job(job) for job in ranked],
