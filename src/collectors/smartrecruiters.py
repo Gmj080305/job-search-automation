@@ -6,6 +6,46 @@ from urllib.parse import urlencode
 
 from src.collectors.company_sources import HTTP, JobSource
 
+# Order mirrors SmartRecruiters' documented JobAd.sections object. Each
+# section (when present) is {"title": str, "text": str}; "videos" is excluded
+# since it carries "urls", not "text".
+_JOBAD_SECTION_ORDER = (
+    "jobDescription",
+    "qualifications",
+    "additionalInformation",
+    "companyDescription",
+)
+
+
+def _jobad_text(detail):
+    """Flatten SmartRecruiters' PostingDetails.jobAd.sections object to text.
+
+    The real API shape (per SmartRecruiters' published Posting API docs) is::
+
+        {"jobAd": {"sections": {
+            "jobDescription": {"title": "...", "text": "..."},
+            "qualifications": {"title": "...", "text": "..."},
+            ...
+        }}}
+
+    i.e. ``sections`` is a dict keyed by section name, not a list.
+    """
+    job_ad = detail.get("jobAd")
+    sections = job_ad.get("sections") if isinstance(job_ad, dict) else None
+    if not isinstance(sections, dict):
+        return str(detail.get("description") or "")
+
+    pieces = []
+    for key in _JOBAD_SECTION_ORDER:
+        section = sections.get(key)
+        if not isinstance(section, dict):
+            continue
+        title = section.get("title") or ""
+        text = section.get("text") or ""
+        if title or text:
+            pieces.extend([title, text])
+    return "\n".join(p for p in pieces if p)
+
 
 class SmartRecruitersSource(JobSource):
     def fetch_jobs(self):
@@ -61,11 +101,17 @@ class SmartRecruitersSource(JobSource):
                 else:
                     location_text = str(location or "")
 
-                workplace = "remote" if isinstance(location, dict) and location.get("remote") else ""
+                workplace = ""
+                if isinstance(location, dict):
+                    if location.get("remote"):
+                        workplace = "remote"
+                    elif location.get("hybrid"):
+                        workplace = "hybrid"
+
                 jobs.append({
                     "source_id": posting_id,
                     "title": detail.get("name") or posting.get("name"),
-                    "description": detail.get("jobAd").get("sections") if isinstance(detail.get("jobAd"), dict) else detail.get("description"),
+                    "description": _jobad_text(detail),
                     "location": location_text,
                     "workplace": workplace,
                     "application_url": detail.get("applyUrl") or posting.get("ref") or "",
@@ -80,19 +126,5 @@ class SmartRecruitersSource(JobSource):
                 break
             if isinstance(total, int) and offset >= total:
                 break
-
-        # Convert structured job-ad sections to text where necessary.
-        for job in jobs:
-            desc = job.get("description")
-            if isinstance(desc, list):
-                pieces = []
-                for section in desc:
-                    if not isinstance(section, dict):
-                        continue
-                    pieces.extend([
-                        section.get("title") or "",
-                        section.get("content") or section.get("text") or "",
-                    ])
-                job["description"] = "\n".join(pieces)
 
         return jobs
