@@ -75,7 +75,7 @@ class HTTP:
             raise ValueError("Request URL is outside configured HTTPS hosts.")
         return parsed
 
-    def _request(self, url, check_robots=True):
+    def _request(self, url, check_robots=True, headers=None):
         for _ in range(6):
             parsed = self._check_url(url)
             if check_robots:
@@ -92,6 +92,7 @@ class HTTP:
                 timeout=(10, 40),
                 allow_redirects=False,
                 stream=True,
+                headers=headers,
             ) as response:
                 if response.status_code in {301, 302, 303, 307, 308}:
                     url = urljoin(url, response.headers["Location"])
@@ -144,7 +145,13 @@ class HTTP:
 
     def json(self, url):
         import json
-        return json.loads(self.text(url))
+        # Some ATS platforms (notably Workday's CXS detail endpoint) serve the
+        # careers page's HTML shell on this exact URL unless JSON is
+        # explicitly requested. Without this header, json.loads() would raise
+        # on the HTML body, which upstream code may treat as "no data".
+        return json.loads(
+            self._request(url, headers={"Accept": "application/json"})
+        )
 
 
 def country_from_location(location):
@@ -190,8 +197,8 @@ def normalize(config, raw, taxonomy):
         elif re.search(r"\b(?:fully remote|remote position|remote role)\b",
                        text, re.I):
             work_mode = "remote"
-        elif re.search(r"\b(?:on[- ]site position|on[- ]site role|"
-                       r"work on[- ]site)\b", text, re.I):
+        elif re.search(r"\b(?:on[- ]?site position|on[- ]?site role|"
+                       r"work on[- ]?site)\b", text, re.I):
             work_mode = "onsite"
 
     employment = "unknown"
