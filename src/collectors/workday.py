@@ -3,7 +3,11 @@
 Workday public career sites expose a JSON CXS endpoint of the form:
 POST https://<tenant>.wd<N>.myworkdayjobs.com/wday/cxs/<tenant>/<site>/jobs
 with a JSON request body. Full job details are available from the matching
-GET .../job<externalPath> endpoint.
+GET https://<tenant>.wd<N>.myworkdayjobs.com/wday/cxs/<tenant>/<site><externalPath>
+endpoint, where <externalPath> is the value returned by the listing call and
+already starts with "/job/...". That GET returns the HTML shell of the
+careers SPA (not JSON) unless an "Accept: application/json" header is sent,
+and its payload nests every field under a top-level "jobPostingInfo" object.
 """
 
 from __future__ import annotations
@@ -44,7 +48,14 @@ class WorkdaySource(JobSource):
         response = client.session.post(
             url,
             json=payload,
-            headers={"Content-Type": "application/json"},
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                # Workday localizes list-response strings (postedOn,
+                # locationsText) per Accept-Language; pin it so results don't
+                # vary with the machine's/proxy's default locale.
+                "Accept-Language": "en-US",
+            },
             timeout=(10, 40),
         )
         response.raise_for_status()
@@ -98,14 +109,21 @@ class WorkdaySource(JobSource):
                 if not external_path.startswith("/"):
                     continue
 
-                detail = {}
-                detail_url = f"https://{host}/wday/cxs/{tenant}/{site}/job{external_path}"
+                # externalPath already begins with "/job/..."; do not prepend
+                # another "/job" segment or the request 404s.
+                detail_url = f"https://{host}/wday/cxs/{tenant}/{site}{external_path}"
                 try:
-                    detail = client.json(detail_url)
+                    raw_detail = client.json(detail_url)
                 except Exception:
                     # Listing data is still useful if a detail request is unavailable.
-                    detail = {}
+                    raw_detail = {}
 
+                if not isinstance(raw_detail, dict):
+                    raw_detail = {}
+
+                # The real CXS detail payload nests everything under
+                # jobPostingInfo (siblings: hiringOrganization, similarJobs).
+                detail = raw_detail.get("jobPostingInfo")
                 if not isinstance(detail, dict):
                     detail = {}
 
